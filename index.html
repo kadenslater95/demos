@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link rel="stylesheet" href="index.css"></link>
 </head>
 <body>
   <p id="webgl-status"></p>
-  <canvas></canvas>
+  
+  <!-- TODO: Add a controls overlay -->
+
+  <div id="navbar-container"></div>
+
+  <div id="demo-canvas-container"></div>
 
   <!-- Use glmatrix library -->
   <script type="text/javascript" src="gl-matrix-min.js"></script>
@@ -13,11 +20,26 @@
   <script type="text/javascript">
     const webgl_status = this.document.querySelector("#webgl-status");
 
-    const canvas = document.querySelector("canvas");
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+    const canvasContainer = document.querySelector("#demo-canvas-container");
+
+    const canvas = document.createElement('canvas');
+    canvasContainer.appendChild(canvas);
 
     const gl = canvas.getContext("webgl");
+
+    const resizeCanvas = () => {
+      canvas.width = canvasContainer.clientWidth;
+      canvas.height = canvasContainer.clientHeight;
+
+      if (typeof window.handleCanvasResize === "function") {
+        window.handleCanvasResize();
+      } else if (gl instanceof WebGLRenderingContext) {
+        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+      }
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
   </script>
 
   <script type="text/javascript" src="sphere.js"></script>

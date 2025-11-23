@@ -1,4 +1,9 @@
 
+const fov = Math.PI / 4;
+const near = 0.1;
+const far = 100.0;
+let aspect = 1;
+
 const camera = glMatrix.mat4.create();
 const projection = glMatrix.mat4.create();
 const light = {
@@ -12,8 +17,18 @@ const model_1 = glMatrix.mat4.create();
 const sphere_2 = new Sphere({rho: 3, color: [0.2, 0.7, 0.2]});
 const model_2 = glMatrix.mat4.create();
 
-function init() {
+function updateViewport() {
+  if (!(gl instanceof WebGLRenderingContext)) {
+    return;
+  }
+
   gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+  aspect = canvas.width / canvas.height || 1;
+  glMatrix.mat4.perspective(projection, fov, aspect, near, far);
+}
+
+function init() {
+  updateViewport();
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -24,14 +39,6 @@ function init() {
     [0, 0, 0], // look at origin
     [0, 1, 0] // up direction
   );
-
-  // Projection
-  fov = Math.PI/4; // field of view
-  aspect = canvas.width / canvas.height;
-  near = 0.1;
-  far = 100.0;
-  glMatrix.mat4.perspective(projection, fov, aspect, near, far);
-
 
   sphere_1.init();
 
@@ -65,6 +72,7 @@ function render() {
   //cleanup();
 }
 
+window.handleCanvasResize = updateViewport;
 
 window.onload = function() {
   if(gl instanceof WebGLRenderingContext) {
