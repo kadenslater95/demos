@@ -11,10 +11,10 @@ const light = {
   position: [-15.0, 10.0, -15.0]
 };
 
-const sphere_1 = new Sphere({glContext: gl, mode: 'WIREFRAME', rho: 3, color: [0.2, 0.2, 0.7]});
+const sphere_1 = new Sphere({glContext: gl, mode: 'WIREFRAME', rho: 2.5, color: [0.2, 0.2, 0.7]});
 const model_1 = glMatrix.mat4.create();
 
-const sphere_2 = new Sphere({rho: 3, color: [0.2, 0.7, 0.2]});
+const sphere_2 = new Sphere({rho: 2.5, color: [0.2, 0.7, 0.2]});
 const model_2 = glMatrix.mat4.create();
 
 function updateViewport() {
@@ -35,7 +35,7 @@ function init() {
   // Camera
   glMatrix.mat4.lookAt(
     camera,
-    [0, 10, -15], // camera position (Note: make sure to match cameraPosition)
+    [0, 0, -15], // camera position (Note: make sure to match cameraPosition)
     [0, 0, 0], // look at origin
     [0, 1, 0] // up direction
   );
@@ -54,7 +54,7 @@ function render() {
 
 
   glMatrix.mat4.identity(model_1);
-  glMatrix.mat4.translate(model_1, model_1, [-4.0, 0.0, 0.0]);
+  glMatrix.mat4.translate(model_1, model_1, [0.0, 3.0, 0.0]);
   glMatrix.mat4.rotateY(model_1, model_1, performance.now() * 0.0005);
   glMatrix.mat4.rotateX(model_1, model_1, Math.PI/2);
 
@@ -62,7 +62,7 @@ function render() {
 
 
   glMatrix.mat4.identity(model_2);
-  glMatrix.mat4.translate(model_2, model_2, [4.0, 0.0, 0.0]);
+  glMatrix.mat4.translate(model_2, model_2, [0.0, -3.0, 0.0]);
 
   sphere_2.draw(model_2, camera, projection, light);
 
