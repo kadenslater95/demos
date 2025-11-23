@@ -18,11 +18,15 @@
   <script type="text/javascript" src="gl-matrix-min.js"></script>
 
   <script type="text/javascript">
-    const webgl_status = this.document.querySelector("#webgl-status");
+    // This is to namespace things
+    const Demos = Demos ?? {};
 
-    const canvasContainer = document.querySelector("#demo-canvas-container");
+// TODO: Put demos namespacing on things.
+    Demos.webgl_status = this.document.querySelector("#webgl-status");
 
-    const canvas = document.createElement('canvas');
+    Demos.canvasContainer = document.querySelector("#demo-canvas-container");
+
+    Demos.canvas = document.createElement('canvas');
     canvasContainer.appendChild(canvas);
 
     const gl = canvas.getContext("webgl");
