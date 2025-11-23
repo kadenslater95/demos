@@ -1,4 +1,9 @@
 
+const fov = Math.PI / 4;
+const near = 0.1;
+const far = 100.0;
+let aspect = 1;
+
 const camera = glMatrix.mat4.create();
 const projection = glMatrix.mat4.create();
 const light = {
@@ -6,32 +11,34 @@ const light = {
   position: [-15.0, 10.0, -15.0]
 };
 
-const sphere_1 = new Sphere({glContext: gl, mode: 'WIREFRAME', rho: 3, color: [0.2, 0.2, 0.7]});
+const sphere_1 = new Sphere({glContext: gl, mode: 'WIREFRAME', rho: 2.5, color: [0.2, 0.2, 0.7]});
 const model_1 = glMatrix.mat4.create();
 
-const sphere_2 = new Sphere({rho: 3, color: [0.2, 0.7, 0.2]});
+const sphere_2 = new Sphere({rho: 2.5, color: [0.2, 0.7, 0.2]});
 const model_2 = glMatrix.mat4.create();
 
-function init() {
+function updateViewport() {
+  if (!(gl instanceof WebGLRenderingContext)) {
+    return;
+  }
+
   gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+  aspect = canvas.width / canvas.height || 1;
+  glMatrix.mat4.perspective(projection, fov, aspect, near, far);
+}
+
+function init() {
+  updateViewport();
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
   // Camera
   glMatrix.mat4.lookAt(
     camera,
-    [0, 10, -15], // camera position (Note: make sure to match cameraPosition)
+    [0, 0, -15], // camera position (Note: make sure to match cameraPosition)
     [0, 0, 0], // look at origin
     [0, 1, 0] // up direction
   );
-
-  // Projection
-  fov = Math.PI/4; // field of view
-  aspect = canvas.width / canvas.height;
-  near = 0.1;
-  far = 100.0;
-  glMatrix.mat4.perspective(projection, fov, aspect, near, far);
-
 
   sphere_1.init();
 
@@ -47,7 +54,7 @@ function render() {
 
 
   glMatrix.mat4.identity(model_1);
-  glMatrix.mat4.translate(model_1, model_1, [-4.0, 0.0, 0.0]);
+  glMatrix.mat4.translate(model_1, model_1, [0.0, 3.0, 0.0]);
   glMatrix.mat4.rotateY(model_1, model_1, performance.now() * 0.0005);
   glMatrix.mat4.rotateX(model_1, model_1, Math.PI/2);
 
@@ -55,7 +62,7 @@ function render() {
 
 
   glMatrix.mat4.identity(model_2);
-  glMatrix.mat4.translate(model_2, model_2, [4.0, 0.0, 0.0]);
+  glMatrix.mat4.translate(model_2, model_2, [0.0, -3.0, 0.0]);
 
   sphere_2.draw(model_2, camera, projection, light);
 
@@ -65,6 +72,7 @@ function render() {
   //cleanup();
 }
 
+window.handleCanvasResize = updateViewport;
 
 window.onload = function() {
   if(gl instanceof WebGLRenderingContext) {
