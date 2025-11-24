@@ -21,27 +21,28 @@
   <script type="text/javascript" src="gl-matrix-min.js"></script>
 
   <script type="text/javascript">
-    // This is to namespace things
-    const Demos = Demos ?? {};
+    // TODO: Put Demos namespacing on things
 
-// TODO: Put demos namespacing on things.
+    // This is to namespace things
+    const Demos = {};
+
     Demos.webgl_status = this.document.querySelector("#webgl-status");
 
     Demos.canvasContainer = document.querySelector("#demo-canvas-container");
 
     Demos.canvas = document.createElement('canvas');
-    canvasContainer.appendChild(canvas);
+    Demos.canvasContainer.appendChild(Demos.canvas);
 
-    const gl = canvas.getContext("webgl");
+    Demos.gl = Demos.canvas.getContext("webgl");
 
     const resizeCanvas = () => {
-      canvas.width = canvasContainer.clientWidth;
-      canvas.height = canvasContainer.clientHeight;
+      Demos.canvas.width = Demos.canvasContainer.clientWidth;
+      Demos.canvas.height = Demos.canvasContainer.clientHeight;
 
       if (typeof window.handleCanvasResize === "function") {
         window.handleCanvasResize();
-      } else if (gl instanceof WebGLRenderingContext) {
-        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+      } else if (Demos.gl instanceof WebGLRenderingContext) {
+        Demos.gl.viewport(0, 0, Demos.gl.drawingBufferWidth, Demos.gl.drawingBufferHeight);
       }
     };
 

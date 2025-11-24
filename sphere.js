@@ -397,8 +397,8 @@ class Sphere {
   constructor(args) {
     this.#constructorValidator(args);
 
-    // If you have a global gl rendering context, then it will use that
-    this._gl = args.glContext ?? gl;
+    // If you have a global Demos.gl rendering context, then it will use that
+    this._gl = args.glContext ?? Demos.gl;
 
     this._thetaN = args.thetaN ?? 50;
     this._phiN = args.phiN ?? 50;
@@ -460,7 +460,7 @@ class Sphere {
 
 
   #constructorValidator(args) {
-    if(!(args.glContext instanceof WebGLRenderingContext || gl instanceof WebGLRenderingContext)) {
+    if(!(args.glContext instanceof WebGLRenderingContext || Demos.gl instanceof WebGLRenderingContext)) {
       throw "SphereError: Invalid argument provided, glContext must be a WebGLRenderingContext";
     }
 
@@ -514,8 +514,8 @@ class Sphere {
     if(!this._gl.getProgramParameter(this._program, this._gl.LINK_STATUS)) {
       const linkErrLog = this._gl.getProgramInfoLog(this._program);
       cleanup();
-      webgl_status.style.display = 'block';
-      webgl_status.textContent = `Shader program did not link successfully. Error log: ${linkErrLog}`;
+      Demos.webgl_status.style.display = 'block';
+      Demos.webgl_status.textContent = `Shader program did not link successfully. Error log: ${linkErrLog}`;
       throw new Error(`Program failed to link: ${linkErrLog}`);
     }
   }
@@ -547,12 +547,12 @@ class Sphere {
     this._uCamera = this._gl.getUniformLocation(this._program, "uCamera");
     this._uProjection = this._gl.getUniformLocation(this._program, "uProjection");
 
-    this._uNormalMatrix = gl.getUniformLocation(this._program, "uNormalMatrix");
+    this._uNormalMatrix = Demos.gl.getUniformLocation(this._program, "uNormalMatrix");
 
     this._uRho = this._gl.getUniformLocation(this._program, "rho");
 
-    this._uLightPosition = gl.getUniformLocation(this._program, "uLightPosition");
-    this._uCameraPosition = gl.getUniformLocation(this._program, "uCameraPosition");
+    this._uLightPosition = Demos.gl.getUniformLocation(this._program, "uLightPosition");
+    this._uCameraPosition = Demos.gl.getUniformLocation(this._program, "uCameraPosition");
 
     this._uLightColor = this._gl.getUniformLocation(this._program, "uLightColor");
     this._uObjectColor = this._gl.getUniformLocation(this._program, "uObjectColor");

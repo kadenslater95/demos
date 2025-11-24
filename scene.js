@@ -42,14 +42,14 @@ class Scene {
   constructor(args) {
     this.#constructorValidator(args);
 
-    // If you have a global gl rendering context, then it will use that
-    this._gl = args.glContext ?? gl;
+    // If you have a global Demos.gl rendering context, then it will use that
+    this._gl = args.glContext ?? Demos.gl;
 
     this._camera = args.camera ?? glMatrix.mat4
   }
 
   #constructorValidator(args) {
-    if(!(args.glContext instanceof WebGLRenderingContext || gl instanceof WebGLRenderingContext)) {
+    if(!(args.glContext instanceof WebGLRenderingContext || Demos.gl instanceof WebGLRenderingContext)) {
       throw "SceneError: Invalid argument provided, glContext must be a WebGLRenderingContext";
     }
 

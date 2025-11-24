@@ -11,26 +11,26 @@ const light = {
   position: [-15.0, 10.0, -15.0]
 };
 
-const sphere_1 = new Sphere({glContext: gl, mode: 'WIREFRAME', rho: 2.5, color: [0.2, 0.2, 0.7]});
+const sphere_1 = new Sphere({glContext: Demos.gl, mode: 'WIREFRAME', rho: 2.5, color: [0.2, 0.2, 0.7]});
 const model_1 = glMatrix.mat4.create();
 
 const sphere_2 = new Sphere({rho: 2.5, color: [0.2, 0.7, 0.2]});
 const model_2 = glMatrix.mat4.create();
 
 function updateViewport() {
-  if (!(gl instanceof WebGLRenderingContext)) {
+  if (!(Demos.gl instanceof WebGLRenderingContext)) {
     return;
   }
 
-  gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-  aspect = canvas.width / canvas.height || 1;
+  Demos.gl.viewport(0, 0, Demos.gl.drawingBufferWidth, Demos.gl.drawingBufferHeight);
+  aspect = Demos.canvas.width / Demos.canvas.height || 1;
   glMatrix.mat4.perspective(projection, fov, aspect, near, far);
 }
 
 function init() {
   updateViewport();
 
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  Demos.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
   // Camera
   glMatrix.mat4.lookAt(
@@ -49,8 +49,8 @@ function init() {
 
 
 function render() {
-  gl.enable(gl.DEPTH_TEST);
-  gl.clear(gl.COLOR_BUFFER_BIT || gl.DEPTH_BUFFER_BIT);
+  Demos.gl.enable(Demos.gl.DEPTH_TEST);
+  Demos.gl.clear(Demos.gl.COLOR_BUFFER_BIT || Demos.gl.DEPTH_BUFFER_BIT);
 
 
   glMatrix.mat4.identity(model_1);
@@ -75,11 +75,11 @@ function render() {
 window.handleCanvasResize = updateViewport;
 
 window.onload = function() {
-  if(gl instanceof WebGLRenderingContext) {
-    webgl_status.style.display = "none";
+  if(Demos.gl instanceof WebGLRenderingContext) {
+    Demos.webgl_status.style.display = "none";
 
     init();
   }else {
-    webgl_status.textContent = "Failed. Your browser or device may not support WebGL";
+    Demos.webgl_status.textContent = "Failed. Your browser or device may not support WebGL";
   }
 }
