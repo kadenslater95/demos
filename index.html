@@ -35,6 +35,12 @@
 
     Demos.gl = Demos.canvas.getContext("webgl");
 
+    if(Demos.gl instanceof WebGLRenderingContext) {
+      Demos.webgl_status.style.display = "none";
+    }else {
+      Demos.webgl_status.textContent = "Failed. Your browser or device may not support WebGL";
+    }
+
     const resizeCanvas = () => {
       Demos.canvas.width = Demos.canvasContainer.clientWidth;
       Demos.canvas.height = Demos.canvasContainer.clientHeight;

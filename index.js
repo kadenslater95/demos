@@ -75,11 +75,5 @@ function render() {
 window.handleCanvasResize = updateViewport;
 
 window.onload = function() {
-  if(Demos.gl instanceof WebGLRenderingContext) {
-    Demos.webgl_status.style.display = "none";
-
-    init();
-  }else {
-    Demos.webgl_status.textContent = "Failed. Your browser or device may not support WebGL";
-  }
+  init();
 }

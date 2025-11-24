@@ -515,7 +515,7 @@ class Sphere {
       const linkErrLog = this._gl.getProgramInfoLog(this._program);
       cleanup();
       Demos.webgl_status.style.display = 'block';
-      Demos.webgl_status.textContent = `Shader program did not link successfully. Error log: ${linkErrLog}`;
+      Demos.webgl_status.textContent = `SphereError: Shader program did not link successfully. Error log: ${linkErrLog}`;
       throw new Error(`Program failed to link: ${linkErrLog}`);
     }
   }
