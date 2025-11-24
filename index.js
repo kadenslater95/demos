@@ -11,10 +11,10 @@ const light = {
   position: [-15.0, 10.0, -15.0]
 };
 
-const sphere_1 = new Sphere({glContext: Demos.gl, mode: 'WIREFRAME', rho: 2.5, color: [0.2, 0.2, 0.7]});
+const sphere_1 = new Demos.Sphere({glContext: Demos.gl, mode: 'WIREFRAME', rho: 2.5, color: [0.2, 0.2, 0.7]});
 const model_1 = glMatrix.mat4.create();
 
-const sphere_2 = new Sphere({rho: 2.5, color: [0.2, 0.7, 0.2]});
+const sphere_2 = new Demos.Sphere({rho: 2.5, color: [0.2, 0.7, 0.2]});
 const model_2 = glMatrix.mat4.create();
 
 function updateViewport() {
@@ -68,8 +68,6 @@ function render() {
 
 
   requestAnimationFrame(render);
-
-  //cleanup();
 }
 
 window.handleCanvasResize = updateViewport;
