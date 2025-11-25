@@ -2,7 +2,7 @@
 // TODO: Fill out these classes and use them
 
 
-class Light {
+Demos.Light = class {
   constructor(args) {
     this.#constructorValidator(args);
 
@@ -14,7 +14,19 @@ class Light {
 }
 
 
-class Camera {
+Demos.Camera = class {
+  constructor(args) {
+    this.#constructorValidator(args);
+
+  }
+
+  #constructorValidator(args) {
+    
+  }
+}
+
+
+Demos.Projection = class {
   constructor(args) {
     this.#constructorValidator(args);
 
@@ -26,19 +38,7 @@ class Camera {
 }
 
 
-class Projection {
-  constructor(args) {
-    this.#constructorValidator(args);
-
-  }
-
-  #constructorValidator(args) {
-
-  }
-}
-
-
-class Scene {
+Demos.Scene = class {
   constructor(args) {
     this.#constructorValidator(args);
 
@@ -53,8 +53,16 @@ class Scene {
       throw "SceneError: Invalid argument provided, glContext must be a WebGLRenderingContext";
     }
 
-    if(!([null, undefined].includes(args.camera) || args.camera instanceof Camera)) {
-      throw "SceneError: Invalid argument provided, camera must be a Float32Array (may come frm glMatrix.mat4)"
+    if(!([null, undefined].includes(args.light) || args.light instanceof Demos.Light)) {
+      throw "SceneError: Invalid argument provided, (light) can be blank or an instance of Demos.Light"
+    }
+
+    if(!(args.projection instanceof Demos.Projection)) {
+      throw "SceneError: Invalid argument provided, (projection) must be an instance of Demos.Projection"
+    }
+
+    if(!(args.camera instanceof Demos.Camera)) {
+      throw "SceneError: Invalid argument provided, (camera) must be an instance of Demos.Camera"
     }
   }
 }
