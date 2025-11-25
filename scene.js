@@ -4,36 +4,104 @@
 
 Demos.Light = class {
   constructor(args) {
-    this.#constructorValidator(args);
+    this._color = args.color;
 
+    this._position = args.position;
   }
 
-  #constructorValidator(args) {
+  get color() {
+    return this._color;
+  }
 
+  set color(newColor) {
+    this._color = newColor;
+  }
+
+  get position() {
+    return this._position;
+  }
+
+  set position(newPosition) {
+    this._position = newPosition;
   }
 }
 
 
 Demos.Camera = class {
   constructor(args) {
-    this.#constructorValidator(args);
+    this._position = args.position ?? [0.0, 0.0, -5.0];
 
+    this._lookAt = args.lookAt ?? [0.0, 0.0, 0.0];
+
+    this._up = args.up ?? [0.0, 1.0, 0.0];
+
+    this._matrix = glMatrix.mat4.create();
+    this.#reset();
   }
 
-  #constructorValidator(args) {
-    
+  get matrix() {
+    return this._matrix;
+  }
+
+  get position() {
+    return this._position;
+  }
+
+  set position(newPosition) {
+    this._position = newPosition;
+  }
+
+  get lookAt() {
+    return this._lookAt;
+  }
+
+  set lookAt(newLookAt) {
+    this._lookAt = newLookAt;
+  }
+
+  get up() {
+    return this._up;
+  }
+
+  set up(newUp) {
+    this._up = newUp;
+  }
+
+  #reset() {
+    glMatrix.mat4.lookAt(
+      this._matrix,
+      this._position,
+      this._lookAt,
+      this._up
+    );
   }
 }
 
 
+// TODO: Make ortho projection option
 Demos.Projection = class {
   constructor(args) {
-    this.#constructorValidator(args);
+    this._fov = args.fov;
+    this._near = args.near;
+    this._far = args._far;
+    this._aspect = args.aspect;
 
+    this._matrix = glMatrix.mat4.create();
+    this.#reset();
   }
 
-  #constructorValidator(args) {
+  get matrix() {
+    return this._matrix;
+  }
 
+  set aspect(newAspect) {
+    this._aspect = newAspect;
+
+    this.#reset();
+  }
+
+  #reset() {
+    glMatrix.mat4.perspective(this._matrix, this._fov, this._aspect, this._near, this._far);
   }
 }
 
@@ -45,7 +113,27 @@ Demos.Scene = class {
     // If you have a global Demos.gl rendering context, then it will use that
     this._gl = args.glContext ?? Demos.gl;
 
-    this._camera = args.camera ?? glMatrix.mat4
+    this._camera = args.camera;
+
+    this._projection = args.projection;
+
+    this._light = args.light;
+  }
+
+  get gl() {
+    return this._gl;
+  }
+
+  get camera() {
+    return this._camera;
+  }
+
+  get projection() {
+    return this._projection;
+  }
+
+  get light() {
+    return this._light;
   }
 
   #constructorValidator(args) {
@@ -57,11 +145,11 @@ Demos.Scene = class {
       throw "SceneError: Invalid argument provided, (light) can be blank or an instance of Demos.Light"
     }
 
-    if(!(args.projection instanceof Demos.Projection)) {
+    if(!([null, undefined].includes(args.projection) || args.projection instanceof Demos.Projection)) {
       throw "SceneError: Invalid argument provided, (projection) must be an instance of Demos.Projection"
     }
 
-    if(!(args.camera instanceof Demos.Camera)) {
+    if(!([null, undefined].includes(args.camera) || args.camera instanceof Demos.Camera)) {
       throw "SceneError: Invalid argument provided, (camera) must be an instance of Demos.Camera"
     }
   }

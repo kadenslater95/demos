@@ -315,8 +315,7 @@ Demos.Sphere = class {
   constructor(args) {
     this.#constructorValidator(args);
 
-    // If you have a global Demos.gl rendering context, then it will use that
-    this._gl = args.glContext ?? Demos.gl;
+    this._scene = args.scene;
 
     this._thetaN = args.thetaN ?? 50;
     this._phiN = args.phiN ?? 50;
@@ -330,8 +329,18 @@ Demos.Sphere = class {
       phiN: this._phiN,
       mode: this._mode
     };
+
+    this._model = glMatrix.mat4.create();
   }
 
+
+  get model() {
+    return this._model;
+  }
+
+  set model(newModel) {
+    this._model = newModel;
+  }
 
   get color() {
     return this._color;
@@ -362,17 +371,17 @@ Demos.Sphere = class {
     this.#initUniforms();
   }
 
-  draw(model, camera, projection, light) {
-    this._gl.useProgram(this._program);
+  draw() {
+    this._scene.gl.useProgram(this._program);
 
     this.#loadBuffers();
 
-    this.#loadUniforms(model, camera, projection, light);
+    this.#loadUniforms();
 
     if(this._mode === 'WIREFRAME') {
-      this._gl.drawElements(this._gl.LINES, this._lattice.iDataSize, this._gl.UNSIGNED_SHORT, 0);
+      this._scene.gl.drawElements(this._scene.gl.LINES, this._lattice.iDataSize, this._scene.gl.UNSIGNED_SHORT, 0);
     }else {
-      this._gl.drawElements(this._gl.TRIANGLES, this._lattice.iDataSize, this._gl.UNSIGNED_SHORT, 0);
+      this._scene.gl.drawElements(this._scene.gl.TRIANGLES, this._lattice.iDataSize, this._scene.gl.UNSIGNED_SHORT, 0);
     }
   }
 
@@ -486,29 +495,29 @@ Demos.Sphere = class {
       }
     `;
 
-    const vertexShader = this._gl.createShader(this._gl.VERTEX_SHADER);
-    this._gl.shaderSource(vertexShader, vShaderSource);
-    this._gl.compileShader(vertexShader);
+    const vertexShader = this._scene.gl.createShader(this._scene.gl.VERTEX_SHADER);
+    this._scene.gl.shaderSource(vertexShader, vShaderSource);
+    this._scene.gl.compileShader(vertexShader);
 
-    const fragmentShader = this._gl.createShader(this._gl.FRAGMENT_SHADER);
-    this._gl.shaderSource(fragmentShader, fShaderSource);
-    this._gl.compileShader(fragmentShader);
+    const fragmentShader = this._scene.gl.createShader(this._scene.gl.FRAGMENT_SHADER);
+    this._scene.gl.shaderSource(fragmentShader, fShaderSource);
+    this._scene.gl.compileShader(fragmentShader);
 
-    this._program = this._gl.createProgram();
+    this._program = this._scene.gl.createProgram();
 
-    this._gl.attachShader(this._program, vertexShader);
-    this._gl.attachShader(this._program, fragmentShader);
+    this._scene.gl.attachShader(this._program, vertexShader);
+    this._scene.gl.attachShader(this._program, fragmentShader);
 
-    this._gl.linkProgram(this._program);
+    this._scene.gl.linkProgram(this._program);
 
-    this._gl.detachShader(this._program, vertexShader);
-    this._gl.detachShader(this._program, fragmentShader);
+    this._scene.gl.detachShader(this._program, vertexShader);
+    this._scene.gl.detachShader(this._program, fragmentShader);
 
-    this._gl.deleteShader(vertexShader);
-    this._gl.deleteShader(fragmentShader);
+    this._scene.gl.deleteShader(vertexShader);
+    this._scene.gl.deleteShader(fragmentShader);
 
-    if(!this._gl.getProgramParameter(this._program, this._gl.LINK_STATUS)) {
-      const linkErrLog = this._gl.getProgramInfoLog(this._program);
+    if(!this._scene.gl.getProgramParameter(this._program, this._scene.gl.LINK_STATUS)) {
+      const linkErrLog = this._scene.gl.getProgramInfoLog(this._program);
       Demos.webgl_status.style.display = 'block';
       Demos.webgl_status.textContent = `SphereError: Shader program did not link successfully. Error log: ${linkErrLog}`;
       throw new Error(`Program failed to link: ${linkErrLog}`);
@@ -516,74 +525,75 @@ Demos.Sphere = class {
   }
 
   #initBuffers() {
-    this._aPosition = this._gl.getAttribLocation(this._program, "aPosition");
-    this._gl.enableVertexAttribArray(this._aPosition);
+    this._aPosition = this._scene.gl.getAttribLocation(this._program, "aPosition");
+    this._scene.gl.enableVertexAttribArray(this._aPosition);
 
-    this._aNormal = this._gl.getAttribLocation(this._program, "aNormal");
-    this._gl.enableVertexAttribArray(this._aNormal);
+    this._aNormal = this._scene.gl.getAttribLocation(this._program, "aNormal");
+    this._scene.gl.enableVertexAttribArray(this._aNormal);
 
-    this._latticeBuffer = this._gl.createBuffer();
-    this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._latticeBuffer);
-    this._gl.vertexAttribPointer(this._aPosition, 2, this._gl.FLOAT, false, 0, 0);
-    this._gl.bufferData(this._gl.ARRAY_BUFFER, this._lattice.vData, this._gl.STATIC_DRAW);
+    this._latticeBuffer = this._scene.gl.createBuffer();
+    this._scene.gl.bindBuffer(this._scene.gl.ARRAY_BUFFER, this._latticeBuffer);
+    this._scene.gl.vertexAttribPointer(this._aPosition, 2, this._scene.gl.FLOAT, false, 0, 0);
+    this._scene.gl.bufferData(this._scene.gl.ARRAY_BUFFER, this._lattice.vData, this._scene.gl.STATIC_DRAW);
 
-    this._indexBuffer = this._gl.createBuffer();
-    this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-    this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, this._lattice.iData, this._gl.STATIC_DRAW);
+    this._indexBuffer = this._scene.gl.createBuffer();
+    this._scene.gl.bindBuffer(this._scene.gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+    this._scene.gl.bufferData(this._scene.gl.ELEMENT_ARRAY_BUFFER, this._lattice.iData, this._scene.gl.STATIC_DRAW);
 
-    this._normalBuffer = this._gl.createBuffer();
-    this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._normalBuffer);
-    this._gl.vertexAttribPointer(this._aNormal, 3, this._gl.FLOAT, false, 0, 0);
-    this._gl.bufferData(this._gl.ARRAY_BUFFER, this._lattice.nData, this._gl.STATIC_DRAW);
+    this._normalBuffer = this._scene.gl.createBuffer();
+    this._scene.gl.bindBuffer(this._scene.gl.ARRAY_BUFFER, this._normalBuffer);
+    this._scene.gl.vertexAttribPointer(this._aNormal, 3, this._scene.gl.FLOAT, false, 0, 0);
+    this._scene.gl.bufferData(this._scene.gl.ARRAY_BUFFER, this._lattice.nData, this._scene.gl.STATIC_DRAW);
   }
 
   #initUniforms() {
-    this._uModel = this._gl.getUniformLocation(this._program, "uModel");
-    this._uCamera = this._gl.getUniformLocation(this._program, "uCamera");
-    this._uProjection = this._gl.getUniformLocation(this._program, "uProjection");
+    this._uModel = this._scene.gl.getUniformLocation(this._program, "uModel");
+    this._uCamera = this._scene.gl.getUniformLocation(this._program, "uCamera");
+    this._uProjection = this._scene.gl.getUniformLocation(this._program, "uProjection");
 
     this._uNormalMatrix = Demos.gl.getUniformLocation(this._program, "uNormalMatrix");
 
-    this._uRho = this._gl.getUniformLocation(this._program, "rho");
+    this._uRho = this._scene.gl.getUniformLocation(this._program, "rho");
 
     this._uLightPosition = Demos.gl.getUniformLocation(this._program, "uLightPosition");
     this._uCameraPosition = Demos.gl.getUniformLocation(this._program, "uCameraPosition");
 
-    this._uLightColor = this._gl.getUniformLocation(this._program, "uLightColor");
-    this._uObjectColor = this._gl.getUniformLocation(this._program, "uObjectColor");
+    this._uLightColor = this._scene.gl.getUniformLocation(this._program, "uLightColor");
+    this._uObjectColor = this._scene.gl.getUniformLocation(this._program, "uObjectColor");
   }
 
   #loadBuffers() {
-    this._gl.enableVertexAttribArray(this._aPosition);
-    this._gl.enableVertexAttribArray(this._aNormal);
+    this._scene.gl.enableVertexAttribArray(this._aPosition);
+    this._scene.gl.enableVertexAttribArray(this._aNormal);
 
-    this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._latticeBuffer);
-    this._gl.vertexAttribPointer(this._aPosition, 2, this._gl.FLOAT, false, 0, 0);
+    this._scene.gl.bindBuffer(this._scene.gl.ARRAY_BUFFER, this._latticeBuffer);
+    this._scene.gl.vertexAttribPointer(this._aPosition, 2, this._scene.gl.FLOAT, false, 0, 0);
 
-    this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+    this._scene.gl.bindBuffer(this._scene.gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 
-    this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._normalBuffer);
-    this._gl.vertexAttribPointer(this._aNormal, 3, this._gl.FLOAT, false, 0, 0);
+    this._scene.gl.bindBuffer(this._scene.gl.ARRAY_BUFFER, this._normalBuffer);
+    this._scene.gl.vertexAttribPointer(this._aNormal, 3, this._scene.gl.FLOAT, false, 0, 0);
   }
 
-  #loadUniforms(model, camera, projection, light) {
-    this._gl.uniformMatrix4fv(this._uModel, false, model);
-    this._gl.uniformMatrix4fv(this._uCamera, false, camera);
-    this._gl.uniformMatrix4fv(this._uProjection, false, projection);
+  #loadUniforms() {
+    this._scene.gl.uniformMatrix4fv(this._uModel, false, this._model);
+    this._scene.gl.uniformMatrix4fv(this._uCamera, false, this._scene.camera.matrix);
+    this._scene.gl.uniformMatrix4fv(this._uProjection, false, this._scene.projection.matrix);
 
     const normalMatrix = glMatrix.mat3.create();
-    glMatrix.mat3.fromMat4(normalMatrix, model);
+    glMatrix.mat3.fromMat4(normalMatrix, this._model);
     glMatrix.mat3.invert(normalMatrix, normalMatrix);
     glMatrix.mat3.transpose(normalMatrix, normalMatrix);
-    this._gl.uniformMatrix3fv(this._uNormalMatrix, false, normalMatrix);
+    this._scene.gl.uniformMatrix3fv(this._uNormalMatrix, false, normalMatrix);
 
-    this._gl.uniform1f(this._uRho, this._rho);
+    this._scene.gl.uniform1f(this._uRho, this._rho);
 
-    this._gl.uniform3fv(this._uCameraPosition, [camera[12], camera[13], camera[14]]);
+    const cameraPosition = this._scene.camera.position
+    this._scene.gl.uniform3fv(this._uCameraPosition, [cameraPosition[0], cameraPosition[1], cameraPosition[2]]);
 
-    this._gl.uniform3fv(this._uLightPosition, light.position);
-    this._gl.uniform3fv(this._uLightColor, light.color);
+    this._scene.gl.uniform3fv(this._uLightPosition, this._scene.light.position);
+    this._scene.gl.uniform3fv(this._uLightColor, this._scene.light.color);
 
-    this._gl.uniform3fv(this._uObjectColor, this._color);
+    this._scene.gl.uniform3fv(this._uObjectColor, this._color);
   }
 };
