@@ -19,6 +19,13 @@ body {
   height: 2em;
 
   background-color: #ccc;
+
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  align-items: center;
+
+  color: #444;
 }
 
 

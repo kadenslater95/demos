@@ -8,9 +8,12 @@
 <body>
   <p id="webgl-status"></p>
   
-  <!-- TODO: Add a controls overlay -->
+  <!-- TODO: Add a controls overlay. The navbar will only have 2 items. 1 is a button for the controls layover. The other is a link to source code button that needs styled. -->
 
-  <div id="navbar-container"></div>
+  <div id="navbar-container">
+    Navbar is a Work In Progress
+    <a href="https://github.com/kadenslater95/demos" target="_blank">Source Code</a>
+  </div>
 
   <div id="demo-canvas-container"></div>
 
@@ -18,23 +21,34 @@
   <script type="text/javascript" src="gl-matrix-min.js"></script>
 
   <script type="text/javascript">
-    const webgl_status = this.document.querySelector("#webgl-status");
+    // TODO: Put Demos namespacing on things
 
-    const canvasContainer = document.querySelector("#demo-canvas-container");
+    // This is to namespace things
+    const Demos = {};
 
-    const canvas = document.createElement('canvas');
-    canvasContainer.appendChild(canvas);
+    Demos.webgl_status = this.document.querySelector("#webgl-status");
 
-    const gl = canvas.getContext("webgl");
+    Demos.canvasContainer = document.querySelector("#demo-canvas-container");
+
+    Demos.canvas = document.createElement('canvas');
+    Demos.canvasContainer.appendChild(Demos.canvas);
+
+    Demos.gl = Demos.canvas.getContext("webgl");
+
+    if(Demos.gl instanceof WebGLRenderingContext) {
+      Demos.webgl_status.style.display = "none";
+    }else {
+      Demos.webgl_status.textContent = "Failed. Your browser or device may not support WebGL";
+    }
 
     const resizeCanvas = () => {
-      canvas.width = canvasContainer.clientWidth;
-      canvas.height = canvasContainer.clientHeight;
+      Demos.canvas.width = Demos.canvasContainer.clientWidth;
+      Demos.canvas.height = Demos.canvasContainer.clientHeight;
 
       if (typeof window.handleCanvasResize === "function") {
         window.handleCanvasResize();
-      } else if (gl instanceof WebGLRenderingContext) {
-        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+      } else if (Demos.gl instanceof WebGLRenderingContext) {
+        Demos.gl.viewport(0, 0, Demos.gl.drawingBufferWidth, Demos.gl.drawingBufferHeight);
       }
     };
 
@@ -42,7 +56,11 @@
     window.addEventListener('resize', resizeCanvas);
   </script>
 
+  <script type="text/javascript" src="scene.js"></script>
+
   <script type="text/javascript" src="sphere.js"></script>
+
+  <script type="text/javascript" src="demos/triangular_meshes.js"></script>
 
   <script type="text/javascript" src="index.js"></script>
 </body>
