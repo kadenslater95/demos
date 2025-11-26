@@ -6,4 +6,4 @@ All contained within HTML and Javscript so that it:
 - Can be hosted easily because it doesn't require a databse or anything
 
 Visit this link to see the demos:
-kadenslater95.github.io/demos
+<a href="https://kadenslater95.github.io/demos">kadenslater95.github.io/demos</a>
