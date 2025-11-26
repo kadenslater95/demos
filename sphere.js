@@ -362,13 +362,17 @@ Demos.Sphere = class {
 
 
   init() {
-    this.#buildShaders();
-
-    this._lattice = new Demos.SphereLattice(this._latticeArgs);
+    this.#buildProgram();
 
     this.#initBuffers();
 
     this.#initUniforms();
+  }
+
+  destroy() {
+    this.#destroyProgram();
+
+    this.#destroyBuffers();
   }
 
   draw() {
@@ -379,9 +383,9 @@ Demos.Sphere = class {
     this.#loadUniforms();
 
     if(this._mode === 'WIREFRAME') {
-      this._scene.gl.drawElements(this._scene.gl.LINES, this._lattice.iDataSize, this._scene.gl.UNSIGNED_SHORT, 0);
+      this._scene.gl.drawElements(this._scene.gl.LINES, this._iDataSize, this._scene.gl.UNSIGNED_SHORT, 0);
     }else {
-      this._scene.gl.drawElements(this._scene.gl.TRIANGLES, this._lattice.iDataSize, this._scene.gl.UNSIGNED_SHORT, 0);
+      this._scene.gl.drawElements(this._scene.gl.TRIANGLES, this._iDataSize, this._scene.gl.UNSIGNED_SHORT, 0);
     }
   }
 
@@ -416,7 +420,7 @@ Demos.Sphere = class {
     }
   }
 
-  #buildShaders() {
+  #buildProgram() {
     const fShaderSource = `
       #version 100
 
@@ -524,7 +528,19 @@ Demos.Sphere = class {
     }
   }
 
+  #destroyProgram() {
+    this._scene.gl.useProgram(null);
+
+    if(this._program) {
+      this._scene.gl.deleteProgram(this._program);
+    }
+  }
+
   #initBuffers() {
+    const lattice = new Demos.SphereLattice(this._latticeArgs);
+
+    this._iDataSize = lattice.iDataSize;
+
     this._aPosition = this._scene.gl.getAttribLocation(this._program, "aPosition");
     this._scene.gl.enableVertexAttribArray(this._aPosition);
 
@@ -534,16 +550,30 @@ Demos.Sphere = class {
     this._latticeBuffer = this._scene.gl.createBuffer();
     this._scene.gl.bindBuffer(this._scene.gl.ARRAY_BUFFER, this._latticeBuffer);
     this._scene.gl.vertexAttribPointer(this._aPosition, 2, this._scene.gl.FLOAT, false, 0, 0);
-    this._scene.gl.bufferData(this._scene.gl.ARRAY_BUFFER, this._lattice.vData, this._scene.gl.STATIC_DRAW);
+    this._scene.gl.bufferData(this._scene.gl.ARRAY_BUFFER, lattice.vData, this._scene.gl.STATIC_DRAW);
 
     this._indexBuffer = this._scene.gl.createBuffer();
     this._scene.gl.bindBuffer(this._scene.gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-    this._scene.gl.bufferData(this._scene.gl.ELEMENT_ARRAY_BUFFER, this._lattice.iData, this._scene.gl.STATIC_DRAW);
+    this._scene.gl.bufferData(this._scene.gl.ELEMENT_ARRAY_BUFFER, lattice.iData, this._scene.gl.STATIC_DRAW);
 
     this._normalBuffer = this._scene.gl.createBuffer();
     this._scene.gl.bindBuffer(this._scene.gl.ARRAY_BUFFER, this._normalBuffer);
     this._scene.gl.vertexAttribPointer(this._aNormal, 3, this._scene.gl.FLOAT, false, 0, 0);
-    this._scene.gl.bufferData(this._scene.gl.ARRAY_BUFFER, this._lattice.nData, this._scene.gl.STATIC_DRAW);
+    this._scene.gl.bufferData(this._scene.gl.ARRAY_BUFFER, lattice.nData, this._scene.gl.STATIC_DRAW);
+  }
+
+  #destroyBuffers() {
+    if(this._latticeBuffer) {
+      this._scene.gl.deleteBuffer(this._latticeBuffer);
+    }
+
+    if(this._indexBuffer) {
+      this._scene.gl.deleteBuffer(this._indexBuffer);
+    }
+
+    if(this._normalBuffer) {
+      this._scene.gl.deleteBuffer(this._normalBuffer);
+    }
   }
 
   #initUniforms() {
