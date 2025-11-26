@@ -32,23 +32,9 @@ Demos.TriangularMeshes = class {
       rho: 2.5, 
       color: [0.2, 0.7, 0.2]
     });
-
-
-    window.handleCanvasResize = this.updateViewport();
-  }
-
-  updateViewport() {
-    if (!(Demos.gl instanceof WebGLRenderingContext)) {
-      return;
-    }
-
-    Demos.gl.viewport(0, 0, Demos.gl.drawingBufferWidth, Demos.gl.drawingBufferHeight);
-    this._scene.projection.aspect = Demos.canvas.width / Demos.canvas.height || 1;
   }
 
   destroy() {
-    window.handleCanvasResize = null;
-
     this._sphere_1.destroy();
 
     this._sphere_2.destroy();
@@ -59,7 +45,7 @@ Demos.TriangularMeshes = class {
   }
 
   #init() {
-    this.updateViewport();
+    this._scene.updateViewport();
 
     Demos.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 

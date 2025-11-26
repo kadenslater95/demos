@@ -118,6 +118,8 @@ Demos.Scene = class {
     this._projection = args.projection;
 
     this._light = args.light;
+
+    window.handleCanvasResize = this.updateViewport();
   }
 
   get gl() {
@@ -134,6 +136,19 @@ Demos.Scene = class {
 
   get light() {
     return this._light;
+  }
+
+  destroy() {
+    window.handleCanvasResize = null;
+  }
+
+  updateViewport() {
+    if (!(Demos.gl instanceof WebGLRenderingContext)) {
+      return;
+    }
+
+    Demos.gl.viewport(0, 0, Demos.gl.drawingBufferWidth, Demos.gl.drawingBufferHeight);
+    this._projection.aspect = Demos.canvas.width / Demos.canvas.height || 1;
   }
 
   #constructorValidator(args) {
