@@ -16,6 +16,11 @@ Demos.TriangularMeshes = class {
       light: new Demos.Light({
         color: [0.8, 0.8, 0.8],
         position: [-15.0, 10.0, -15.0]
+      }),
+
+      renderer: new Demos.Renderer({
+        vertexShader: new Demos.SphereVertexShader(),
+        fragmentShader: new Demos.BlinnPhongFragementShader()
       })
     });
 
@@ -77,4 +82,3 @@ Demos.TriangularMeshes = class {
     requestAnimationFrame(this.#render.bind(this));
   }
 }
-
